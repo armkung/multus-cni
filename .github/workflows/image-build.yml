@@ -1,5 +1,8 @@
 name: Image build
-on: [pull_request]
+on:
+  push:
+    branches:
+      - v3.8.1
 jobs:
   build-amd64:
     name: Image build/amd64

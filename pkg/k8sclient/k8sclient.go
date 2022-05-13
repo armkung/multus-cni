@@ -586,12 +586,17 @@ func GetDefaultNetworks(pod *v1.Pod, conf *types.NetConf, kubeClient *ClientInfo
 // tryLoadK8sPodDefaultNetwork get pod default network from annotations
 func tryLoadK8sPodDefaultNetwork(kubeClient *ClientInfo, pod *v1.Pod, conf *types.NetConf) (*types.DelegateNetConf, error) {
 	var netAnnot string
+	var ok bool
+
 	logging.Debugf("tryLoadK8sPodDefaultNetwork: %v, %v, %v", kubeClient, pod, conf)
 
-	netAnnot, ok := pod.Annotations[defaultNetAnnot]
-	if !ok {
-		logging.Debugf("tryLoadK8sPodDefaultNetwork: Pod default network annotation is not defined")
-		return nil, nil
+	netAnnot, ok = pod.Annotations["cni"]
+	if !ok {		
+		netAnnot, ok = pod.Annotations[defaultNetAnnot]
+		if !ok {
+			logging.Debugf("tryLoadK8sPodDefaultNetwork: Pod default network annotation is not defined")
+			return nil, nil
+		}
 	}
 
 	// The CRD object of default network should only be defined in multusNamespace
